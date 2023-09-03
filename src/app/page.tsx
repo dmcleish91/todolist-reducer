@@ -1,113 +1,99 @@
-import Image from 'next/image'
+'use client';
+
+import { ListChecks } from 'lucide-react';
+import TodoList from '@/components/todolist';
+import TodoForm from '@/components/todoform';
+import { TodoItem } from '@/components/todo';
+import { useEffect, useReducer, useState } from 'react';
+
+export const ACTIONS = {
+  ADD_TODO: 'add-todo',
+  TOGGLE_TODO: 'toggle-todo',
+  DELETE_TODO: 'delete-todo',
+  EDIT_TODO: 'edit-todo',
+  RESET_TODO: 'reset-todo',
+} as const;
+
+type UpdateAction = {
+  type: 'add-todo' | 'toggle-todo' | 'delete-todo';
+  payload: string | number;
+};
+
+type ResetAction = {
+  type: 'reset-todo';
+};
+
+type EditAction = {
+  type: 'edit-todo';
+  payload: { id: string; title: string };
+};
+
+export type Action = UpdateAction | ResetAction | EditAction;
+
+function reducer(state: TodoItem[], action: Action) {
+  switch (action.type) {
+    case ACTIONS.ADD_TODO:
+      return [...state, newTodo(action.payload as string)];
+    case ACTIONS.DELETE_TODO:
+      return [...state.filter((todo) => todo.id !== action.payload)];
+    case ACTIONS.TOGGLE_TODO:
+      return [...state.map((todo) => (todo.id === action.payload ? { ...todo, completed: !todo.completed } : todo))];
+    case ACTIONS.EDIT_TODO:
+      return [
+        ...state.map((todo) => (todo.id === action.payload.id ? { ...todo, title: action.payload.title } : todo)),
+      ];
+    case ACTIONS.RESET_TODO:
+      return [];
+    default:
+      return state;
+  }
+}
+
+function newTodo(title: string): TodoItem {
+  return {
+    id: Date.now().toString(),
+    title,
+    completed: false,
+  };
+}
 
 export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+  const initialValue = () => {
+    const todos = localStorage.getItem('todos');
+    return todos ? JSON.parse(todos) : [];
+  };
+  const [todos, dispatch] = useReducer(reducer, [], initialValue);
+  const [newTodoTitle, setNewTodoTitle] = useState('');
+  const [editTodoItem, setEditTodoItem] = useState<TodoItem | null>(null);
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+  useEffect(() => {
+    localStorage.setItem('todos', JSON.stringify(todos));
+  }, [todos]);
+
+  useEffect(() => {
+    if (editTodoItem) {
+      setNewTodoTitle(editTodoItem.title);
+    } else {
+      setNewTodoTitle('');
+    }
+  }, [editTodoItem]);
+
+  return (
+    <div className='flex min-h-screen flex-col items-center justify-center gap-4 fade-in'>
+      <div className='flex flex-col gap-4'>
+        <div className='flex flex-row items-center justify-center gap-4'>
+          <p className='text-3xl'>TODOLIFE</p>
+          <ListChecks className='h-7 w-7' />
+        </div>
+        <TodoForm
+          newTodo={newTodoTitle}
+          setNewTodo={setNewTodoTitle}
+          editTodo={editTodoItem}
+          setEditTodo={setEditTodoItem}
+          dispatch={dispatch}
         />
       </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore the Next.js 13 playground.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+      <TodoList todos={todos} setEditTodo={setEditTodoItem} dispatch={dispatch} />
+    </div>
+  );
 }
