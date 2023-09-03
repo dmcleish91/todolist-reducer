@@ -1,11 +1,9 @@
 'use client';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Todo, { TodoItem } from './todo';
-import { Button } from './ui/button';
-import { Layout, X } from 'lucide-react';
 import { Dispatch } from 'react';
-import { ACTIONS, Action } from '@/app/page';
-import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
+import { Action } from '@/app/page';
+import { AnimatePresence, motion } from 'framer-motion';
 import React from 'react';
 
 type TodoListProps = {

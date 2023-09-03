@@ -5,14 +5,7 @@ import TodoList from '@/components/todolist';
 import TodoForm from '@/components/todoform';
 import { TodoItem } from '@/components/todo';
 import { useEffect, useReducer, useState } from 'react';
-
-export const ACTIONS = {
-  ADD_TODO: 'add-todo',
-  TOGGLE_TODO: 'toggle-todo',
-  DELETE_TODO: 'delete-todo',
-  EDIT_TODO: 'edit-todo',
-  RESET_TODO: 'reset-todo',
-} as const;
+import { ACTIONS } from '@/lib/utils';
 
 type UpdateAction = {
   type: 'add-todo' | 'toggle-todo' | 'delete-todo';

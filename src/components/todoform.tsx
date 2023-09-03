@@ -1,10 +1,9 @@
 'use client';
-import { PlusSquare } from 'lucide-react';
-import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Dispatch, useEffect, useRef } from 'react';
-import { ACTIONS, Action } from '@/app/page';
+import { Action } from '@/app/page';
 import { TodoItem } from './todo';
+import { ACTIONS } from '@/lib/utils';
 
 type TodoFormProps = {
   newTodo: string;

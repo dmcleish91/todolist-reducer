@@ -1,8 +1,9 @@
 import { CheckCircle, Circle, Pencil, X } from 'lucide-react';
 import { Button } from './ui/button';
 import { Dispatch } from 'react';
-import { ACTIONS, Action } from '@/app/page';
+import { Action } from '@/app/page';
 import { motion } from 'framer-motion';
+import { ACTIONS } from '@/lib/utils';
 
 type TodoProps = {
   todo: TodoItem;
