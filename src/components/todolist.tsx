@@ -25,7 +25,7 @@ export default function TodoList({ todos, dispatch, setEditTodo }: TodoListProps
           </CardDescription>
         </CardHeader>
         <CardContent className='grid gap-2'>
-          <AnimatePresence initial={false}>
+          <AnimatePresence initial={false} mode='sync'>
             {todos.map((todo) => {
               return (
                 <motion.div
