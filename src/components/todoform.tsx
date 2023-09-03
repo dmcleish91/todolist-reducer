@@ -2,7 +2,7 @@
 import { PlusSquare } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { Dispatch } from 'react';
+import { Dispatch, useEffect, useRef } from 'react';
 import { ACTIONS, Action } from '@/app/page';
 import { TodoItem } from './todo';
 
@@ -15,8 +15,15 @@ type TodoFormProps = {
 };
 
 export default function TodoForm({ newTodo, editTodo, setNewTodo, setEditTodo, dispatch }: TodoFormProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    if (newTodo === '') {
+      console.log('Todo is empty');
+      return;
+    }
+
     if (editTodo) {
       dispatch({ type: ACTIONS.EDIT_TODO, payload: { id: editTodo.id, title: newTodo } });
       setEditTodo(null);
@@ -26,12 +33,20 @@ export default function TodoForm({ newTodo, editTodo, setNewTodo, setEditTodo, d
     setNewTodo('');
   }
 
+  useEffect(() => {
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 700);
+  }, []);
+
   return (
     <form className='flex flex-row gap-2 w-[380px]' onSubmit={handleSubmit}>
-      <Input placeholder='Add new item...' value={newTodo} onChange={(e) => setNewTodo(e.target.value)} />
-      <Button variant='outline' size='icon'>
-        <PlusSquare />
-      </Button>
+      <Input
+        placeholder='Add new item...'
+        value={newTodo}
+        onChange={(e) => setNewTodo(e.target.value)}
+        ref={inputRef}
+      />
     </form>
   );
 }

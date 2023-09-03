@@ -1,5 +1,5 @@
 'use client';
-
+import { Variants, motion } from 'framer-motion';
 import { ListChecks } from 'lucide-react';
 import TodoList from '@/components/todolist';
 import TodoForm from '@/components/todoform';
@@ -57,6 +57,10 @@ function newTodo(title: string): TodoItem {
   };
 }
 
+const titleVariants: Variants = {
+  hidden: { y: '-100vw', opacity: 0 },
+  visible: { y: 0, opacity: 1, transition: { type: 'spring', damping: 18, delay: 0.3 } },
+};
 export default function Home() {
   const initialValue = () => {
     const todos = localStorage.getItem('todos');
@@ -79,12 +83,16 @@ export default function Home() {
   }, [editTodoItem]);
 
   return (
-    <div className='flex min-h-screen flex-col items-center justify-center gap-4 fade-in'>
-      <div className='flex flex-col gap-4'>
-        <div className='flex flex-row items-center justify-center gap-4'>
+    <div className='flex min-h-screen items-center flex-col gap-4 overflow-hidden'>
+      <div className='flex flex-col gap-4 xl:pt-72 pt-24'>
+        <motion.div
+          variants={titleVariants}
+          initial='hidden'
+          animate='visible'
+          className='flex flex-row items-center justify-center gap-4'>
           <p className='text-3xl'>TODOLIFE</p>
           <ListChecks className='h-7 w-7' />
-        </div>
+        </motion.div>
         <TodoForm
           newTodo={newTodoTitle}
           setNewTodo={setNewTodoTitle}

@@ -2,18 +2,21 @@ import { CheckCircle, Circle, Pencil, X } from 'lucide-react';
 import { Button } from './ui/button';
 import { Dispatch } from 'react';
 import { ACTIONS, Action } from '@/app/page';
+import { motion } from 'framer-motion';
 
 type TodoProps = {
   todo: TodoItem;
   dispatch: Dispatch<Action>;
   setEditTodo: Dispatch<TodoItem | null>;
-};
+} & React.ComponentPropsWithRef<'div'>;
 
 export type TodoItem = {
   id: string;
   completed: boolean;
   title: string;
 };
+
+const MotionButton = motion(Button);
 
 export default function Todo({ todo, dispatch, setEditTodo }: TodoProps) {
   return (
@@ -28,13 +31,23 @@ export default function Todo({ todo, dispatch, setEditTodo }: TodoProps) {
         <p className='text-sm text-muted-foreground'>{todo.completed ? 'completed' : 'not completed'}</p>
       </div>
 
-      <Button variant={'ghost'} size={'icon'} onClick={() => setEditTodo(todo)}>
+      <MotionButton
+        variant={'ghost'}
+        size={'icon'}
+        onClick={() => setEditTodo(todo)}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}>
         <Pencil />
-      </Button>
+      </MotionButton>
 
-      <Button variant={'ghost'} size={'icon'} onClick={() => dispatch({ type: ACTIONS.DELETE_TODO, payload: todo.id })}>
+      <MotionButton
+        variant={'ghost'}
+        size={'icon'}
+        onClick={() => dispatch({ type: ACTIONS.DELETE_TODO, payload: todo.id })}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}>
         <X />
-      </Button>
+      </MotionButton>
     </div>
   );
 }
