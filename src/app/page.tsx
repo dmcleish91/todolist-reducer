@@ -56,6 +56,9 @@ const titleVariants: Variants = {
 };
 export default function Home() {
   const initialValue = () => {
+    if (typeof window === 'undefined') {
+      return [];
+    }
     const todos = localStorage.getItem('todos');
     return todos ? JSON.parse(todos) : [];
   };
